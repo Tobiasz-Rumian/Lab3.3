@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 /*
  *  Program GraphicEditor
  *  Pozwala rysować przy użyciu dostępnych figur.
@@ -28,8 +29,13 @@ import java.awt.event.ActionListener;
 public class Graph extends JFrame implements ActionListener {
 
     private static final long serialVersionUID = 3727471814914970170L;
-    private int precision=1000;
 
+
+    public final static int SCREEN_X = 800;
+
+    public final static int SCREEN_Y = 800;
+
+    private ArrayList<JSlider> sliders = new ArrayList<>();
     private final String DESCRIPTION =
             "OPIS PROGRAMU\n\n" +
                     "Aktywna klawisze:\n" +
@@ -49,8 +55,10 @@ public class Graph extends JFrame implements ActionListener {
                     "   Kółko myszki ==> Zmiana rozmiaru figury";
 
     private final MainPanel mainPanel;
-
-    private JMenu[] menu = {new JMenu("Figury"), new JMenu("Edytuj"), new JMenu("Pomoc")};
+    private final MainPanel subPanel;
+    private JMenuBar menuBar;
+    private ArrayList<JMenu> menus = new ArrayList<>();
+    //private JMenu[] menu = {new JMenu("Figury"), new JMenu("Edytuj"), new JMenu("Pomoc")};
     private JMenu[] menu1 = {new JMenu("Punkt"), new JMenu("Koło"), new JMenu("Trójkąt"), new JMenu("Gwiazda"), new JMenu("Klepsydra"), new JMenu("Pięciokąt")};
     private JMenuItem[] items = {new JMenuItem("Losowy Punkt"),//0
             new JMenuItem("Zadany Punkt"),//1
@@ -77,15 +85,29 @@ public class Graph extends JFrame implements ActionListener {
 
     private Graph() {
         super("Edytor graficzny");
-        setSize(800, 800);
+        setSize(SCREEN_X, SCREEN_Y);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        mainPanel = new MainPanel();
-        createGraph();
-        mainPanel.setFocusable(true);
-        mainPanel.setLayout(new BorderLayout());
 
-        setContentPane(mainPanel);
+        mainPanel = new MainPanel();
+        subPanel = new MainPanel();
+        menuBar = new JMenuBar();
+
+        mainPanel.add(subPanel,BorderLayout.CENTER);
+
+        subPanel.setFocusable(true);
+        subPanel.setLayout(new BorderLayout());
+        //for (JMenu aMenu : menu) menuBar.add(aMenu);
+
+        createSlider(JSlider.VERTICAL,0,360,0,360/4,360/8,"Przesuń");
+        createSlider(JSlider.VERTICAL,0,100,10,50,10,"SkalujX");
+        createSlider(JSlider.VERTICAL,0,100,10,50,10,"SkalujY");
+        createSlider(JSlider.VERTICAL,1,1000,10,100,500,"Próbkowanie");
+        setJMenuBar(menuBar);
+        setContentPane(subPanel);
         setVisible(true);
+        subPanel.createGraph();
+        subPanel.addLine(new Point(0,Graph.SCREEN_Y/2),new Point(Graph.SCREEN_X,Graph.SCREEN_Y/2));
+        subPanel.addLine(new Point(Graph.SCREEN_X/2,0),new Point(Graph.SCREEN_X/2,Graph.SCREEN_Y));
     }
 
     public static void main(String[] args) {
@@ -96,16 +118,21 @@ public class Graph extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
     }
-    private void createGraph()
-    {
-        int y =0;
-        for(int i=1;i<precision;i++)
-        {
-            int x=i-200;
-            y=2*x*x+5*x+3;
-            y/=100;
-            mainPanel.addPoint(new Point(x,y));
-        }
+    private void createSlider(int arrangement,int start, int end,
+                              int now, int major, int minor,String name){
+        JSlider slider=new JSlider(arrangement,start,end,now);
+
+        slider.addChangeListener(subPanel);
+        slider.setMajorTickSpacing(major);
+        slider.setMinorTickSpacing(minor);
+        slider.setPaintTicks(true);
+        slider.setPaintLabels(true);
+        slider.setName(name);
+        //subPanel.add(slider,place);
+        JMenu menu = new JMenu(name);
+        menu.add(slider);
+        menuBar.add(menu);
+        sliders.add(slider);
     }
 }
 
