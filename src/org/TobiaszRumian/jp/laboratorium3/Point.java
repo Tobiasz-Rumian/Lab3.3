@@ -1,34 +1,30 @@
 package org.TobiaszRumian.jp.laboratorium3;
 
-/**
- * Created by Tobiasz Rumian on 03.11.2016.
- */
-
-import java.awt.*;
-
 /*
  * @version 1.0
  * @author Tobiasz Rumian
- * Data: 01 Listopad 2016 r.
+ * Data: 05 Listopad 2016 r.
  * Indeks: 226131
  * Grupa: śr 13:15 TN
  */
 
+import java.awt.*;
 
 class Point {
 
-    float x, y;
+    private float x, y;
 
     Point(float x, float y) {
-        this.x = x; this.y = y;
+        this.x = x;
+        this.y = y;
     }
 
-    float getX() {
-        return x;
+    int getX() {
+        return (int) x;
     }
 
-    float getY() {
-        return y;
+    int getY() {
+        return (int) y;
     }
 
     void draw(Graphics g) {
